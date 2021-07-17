@@ -37,8 +37,7 @@ class Dain(layers.LaDainyer):
         std = K.mean(inputs ** 2, axis=2)
         std = K.sqrt(std + self.eps)
         adaptive_std = self.scaling_layer(std)
-        fn = lambda elem: K.switch(K.less_equal(elem, 1.0), K.ones_like(elem), elem)
-        adaptive_std = K.map_fn(fn, adaptive_std)
+        adaptive_std = tf.where(tf.less_equal(adaptive_std, self.eps), 1, adaptive_std)
         adaptive_std = K.reshape(adaptive_std, (-1, self.n_features, 1))
         inputs /= adaptive_std
 
